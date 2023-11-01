@@ -1,34 +1,30 @@
-import Note from "../models/Note";
+const noteService = require('../services/notesService');
 
-export default (socket) => {
-    // Send all messages to the client
-    const emitNotes = async () => {
-      const notes = await Note.find();
-      socket.emit("server:loadnotes", notes);
-    };
+module.exports = (socket) => {
+  // Send all messages to the client
+  const emitNotes = async () => {
+    const notes = await noteService.getNotes();
+    socket.emit("server:loadnotes", notes);
+  };
+  emitNotes();
+
+  socket.on("client:newnote", async (data) => {
+    const savedNote = await noteService.saveNote(data);
+    socket.emit("server:newnote", savedNote);
+  });
+
+  socket.on("client:deletenote", async (noteId) => {
+    await noteService.deleteNote(noteId);
     emitNotes();
+  });
 
-    socket.on("client:newnote", async (data) => {
-      const newNote = new Note(data);
-      const savedNote = await newNote.save();
-      socket.emit("server:newnote", savedNote);
-    });
+  socket.on("client:getnote", async (noteId) => {
+    const note = await noteService.getNote(noteId);
+    socket.emit("server:selectednote", note);
+  });
 
-    socket.on("client:deletenote", async (noteId) => {
-      await Note.findByIdAndDelete(noteId);
-      emitNotes();
-    });
-
-    socket.on("client:getnote", async (noteId) => {
-      const note = await Note.findById(noteId);
-      socket.emit("server:selectednote", note);
-    });
-
-    socket.on("client:updatenote", async (updatedNote) => {
-      await Note.findByIdAndUpdate(updatedNote._id, {
-        title: updatedNote.title,
-        description: updatedNote.description,
-      });
-      emitNotes();
-    });
+  socket.on("client:updatenote", async (updatedNote) => {
+    await noteService.updateNote(updatedNote);
+    emitNotes();
+  });
 };

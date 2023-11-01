@@ -1,11 +1,13 @@
-import { connect } from "mongoose";
-import { MONGODB_URI } from "../config";
+const mongoose = require('mongoose');
+const { MONGODB_URI } = require('../config');
 
-export const connectDB = async () => {
+const connectDB = async () => {
   try {
-    await connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI);
     console.log("Connected to db");
   } catch (error) {
     console.error(error);
   }
 };
+
+module.exports = connectDB;

@@ -1,15 +1,14 @@
-import { Server as WebSocketServer } from "socket.io";
-import http from "http";
-import Sockets from "./sockets";
-import app from "./app";
-import { connectDB } from "./lib/db";
-import { PORT } from "./config";
+const { Server } = require('socket.io');
+const http = require('http');
+const Sockets = require('./sockets');
+const app = require('./app');
+const db = require('./lib/db');
+const { PORT } = require('./config');
 
-connectDB();
+db();
 const server = http.createServer(app);
 const httpServer = server.listen(PORT);
-console.log(`Server on http://localhost:${PORT}`);
-
-const io = new WebSocketServer(httpServer);
+const io = new Server(httpServer);
 
 Sockets(io);
+console.log(`Server on http://localhost:${PORT}`);
