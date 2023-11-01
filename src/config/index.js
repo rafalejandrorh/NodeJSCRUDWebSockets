@@ -1,6 +1,7 @@
-import { config } from "dotenv";
+const { config } = require('dotenv');
 config();
 
-export const PORT = process.env.PORT || 3000;
-export const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost/socketsdb";
+module.exports = {
+  PORT: process.env.PORT || 3000,
+  MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost/socketsdb'
+}
